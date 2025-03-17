@@ -4,8 +4,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 import random
-
-@pytest.fixture(scope="function")
+import time
+from colorama import Fore
+counter = 0
+@pytest.fixture
 def driver():
     
     # 크롬 옵션 설정
@@ -32,12 +34,13 @@ def driver():
     # "AutomationControlled" 자체가 표기되지 않도록 한다.
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("--disable-usb-devices")
-    chrome_options.add_argument("--log-level=3") 
 
     # 6) Sandbox나 DevShm 사이즈 문제 우회 (리눅스 환경에서 발생 가능)
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
+    # DevTools listening on 스크립트 제거
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
     # 드라이버 객체 생성
     driver = webdriver.Chrome(service=Service(), options=chrome_options)
     driver.execute_cdp_cmd("Network.clearBrowserCache", {})
@@ -46,7 +49,18 @@ def driver():
     # 대기시간 설정
     driver.implicitly_wait(5)
     
+    
     yield driver
     
     # 테스트가 끝나면 드라이버 종료
     driver.quit()
+
+@pytest.fixture
+def measure_time(request):
+    global counter
+    counter += 1
+    start_time = time.time()
+    yield
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"\n[{counter}] {Fore.CYAN}{request.node.name}{Fore.RESET} 실행 시간: {Fore.RED}{elapsed_time:.2f} {Fore.RESET}초")
