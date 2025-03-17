@@ -7,6 +7,8 @@ import random
 import time
 from colorama import Fore
 counter = 0
+main_url = "https://www.coupang.com"
+
 @pytest.fixture
 def driver():
     
@@ -48,12 +50,23 @@ def driver():
     driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": {"Referer": "https://www.coupang.com/"}})
     # 대기시간 설정
     driver.implicitly_wait(5)
-    
-    
+
     yield driver
     
     # 테스트가 끝나면 드라이버 종료
     driver.quit()
+
+def pytest_configure(config):
+    config.option.htmlpath = None
+
+def pytest_report_teststatus(report): # 좀더 깔끔출력 스킬
+    if report.when == "call":
+        if report.outcome == "passed":
+            return "✅", "PASS", "Test passed"
+        elif report.outcome == "failed":
+            return "❌", "FAIL", "Test failed"
+        elif report.outcome == "skipped":
+            return "⚠️", "SKIP", "Test skipped"
 
 @pytest.fixture
 def measure_time(request):
@@ -63,4 +76,9 @@ def measure_time(request):
     yield
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"\n[{counter}] {Fore.CYAN}{request.node.name}{Fore.RESET} 실행 시간: {Fore.RED}{elapsed_time:.2f} {Fore.RESET}초")
+    print(f"[{counter}] {Fore.CYAN}{request.node.name}{Fore.RESET} 실행 시간: {Fore.RED}{elapsed_time:.2f} {Fore.RESET}초")
+
+@pytest.fixture
+def start_main(self, driver):
+    driver.get(main_url)
+    
