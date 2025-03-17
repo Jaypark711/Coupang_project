@@ -5,14 +5,14 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
 import time
 class MainPage:
-    Main_URL = "https://www.coupang.com"
+    URL = "https://www.coupang.com"
     SEARCH_INPUT = "headerSearchKeyword"
 
     def __init__(self, driver):
         self.driver = driver
 
-    def open_main(self):
-        self.driver.get(self.Main_URL)
+    def open(self):
+        self.driver.get(self.URL)
     
     def search_items(self, item_name: str):
         search_input_box = self.driver.find_element(By.ID,self.SEARCH_INPUT)
