@@ -7,7 +7,7 @@ import random
 import time
 from colorama import Fore
 counter = 0
-main_url = "https://www.coupang.com"
+
 
 @pytest.fixture
 def driver():
@@ -79,6 +79,8 @@ def measure_time(request):
     print(f"[{counter}] {Fore.CYAN}{request.node.name}{Fore.RESET} 실행 시간: {Fore.RED}{elapsed_time:.2f} {Fore.RESET}초")
 
 @pytest.fixture
-def start_main(self, driver):
+def start_main(driver):
+    main_url = "https://www.coupang.com"
     driver.get(main_url)
-    
+    time.sleep(2)
+    yield driver
