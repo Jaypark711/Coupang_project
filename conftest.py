@@ -3,14 +3,22 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+import random
 
 @pytest.fixture(scope="function")
 def driver():
+    
     # 크롬 옵션 설정
     chrome_options = Options() #쿠팡이 자동화 크롤링 많은 옵션수정이 필요하다..
         # 1) User-Agent 변경
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/91.0")
+    user_agents = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/91.0"
+    ]
+    random_user_agent = random.choice(user_agents)
+    chrome_options.add_argument(f"user-agent={random_user_agent}")
     # 2) SSL 인증서 에러 무시
+    
     chrome_options.add_argument("--ignore-certificate-errors")
     chrome_options.add_argument("--ignore-ssl-errors")
 
@@ -32,11 +40,13 @@ def driver():
 
     # 드라이버 객체 생성
     driver = webdriver.Chrome(service=Service(), options=chrome_options)
+    driver.execute_cdp_cmd("Network.clearBrowserCache", {})
+    driver.delete_all_cookies()
     driver.execute_cdp_cmd("Network.setExtraHTTPHeaders", {"headers": {"Referer": "https://www.coupang.com/"}})
     # 대기시간 설정
     driver.implicitly_wait(5)
-
+    
     yield driver
-
+    
     # 테스트가 끝나면 드라이버 종료
     driver.quit()
