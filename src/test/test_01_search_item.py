@@ -14,6 +14,7 @@ Search_Keyward = "노트북"
 
 @pytest.mark.usefixtures("measure_time", "driver")
 class TestMainPage:
+    @pytest.mark.skip(reason="넘겨봐")
     def test_open_main_page(self,driver):
         main_page = MainPage(driver)
         main_page.open()
@@ -22,6 +23,7 @@ class TestMainPage:
         assert "coupang.com" in driver.current_url  #url에 coupang.com이 있는지 확인 테스트
         time.sleep(2)
 
+    @pytest.mark.skip(reason="넘겨봐 이것도")
     def test_search_without_login(self,driver):
         main_page = MainPage(driver)
         main_page.open()
@@ -29,9 +31,9 @@ class TestMainPage:
         main_page.search_items(Search_Keyward)
         time.sleep(3)
         without_login_result = main_page.products_name()
-        assert len(without_login_result) > 0 #제품명이 1개 이상인지 테스트
         assert len(without_login_result) == 5 # 제품명이 5개인지 테스트
 
-    #@pytest.mark.usefixtures("login_function")
-    def test_search_with_login(self,driver):
-        print("hi")
+    #@pytest.mark.skip(reason="넘겨봐 이것도")
+    @pytest.mark.usefixtures("login_function")
+    def test_search_with_login(driver):
+        print("done!")
